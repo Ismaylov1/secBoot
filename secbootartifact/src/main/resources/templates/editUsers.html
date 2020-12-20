@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>editUsers</title>
+</head>
+<body>
+<div align="center">
+    <h3>Edit Form</h3>
+    <br>
+    <form th:action="@{/admin/edit/{id} (id=*{id})}" th:object="${editUser}" method="POST">
+        <table>
+            <tr>
+                <td>Name</td>
+                <td><input type="text" name="name" th:field="*{username}"/></td>
+                <td>SurName</td>
+                <td><input type="text" name="surname" th:field="*{lastname}"/></td>
+                <td><input type="text" name="password" th:field="*{password}"/></td>
+
+            </tr>
+            <tr>
+                <td>Roles</td>
+                <td>
+                    <th:block th:each="role : ${listRole}">
+                        <br>
+                        <input th:checked="${#lists.contains(editUser.roles, role)}" name="newRole"
+                               th:value="${role.getName()}" type="checkbox"/>
+                        <label th:text="${role.getName()}"></label>
+                    </th:block>
+                </td>
+            </tr>
+        </table>
+        <br>
+        <input type="submit" value="Submit"/>
+    </form>
+</div>
+</body>
+</html>
