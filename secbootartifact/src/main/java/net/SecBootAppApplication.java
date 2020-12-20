@@ -1,4 +1,4 @@
-package sec.app.secboot;
+package net;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
