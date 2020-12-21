@@ -1,12 +1,13 @@
 package net.controller;
 
+import net.service.RoleServiceImpl;
+import net.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import net.model.Role;
 import net.model.User;
-import net.service.UserService;
 
 import java.security.Principal;
 import java.util.HashSet;
@@ -17,12 +18,15 @@ import java.util.Set;
 @Controller
 public class AdminController {
     @Autowired
-    private UserService userService;
+    private UserServiceImpl userServiceimpl;
+
+    @Autowired
+    private RoleServiceImpl roleService;
 
     @GetMapping(value = "/admin")
     public String allUsers(Model model) {
-        model.addAttribute("allUsers", userService.listUsers());
-        List<User> users = userService.listUsers();
+        model.addAttribute("allUsers", userServiceimpl.listUsers());
+        List<User> users = userServiceimpl.listUsers();
         for (User user : users
         ) {
             System.out.println(user);
@@ -32,7 +36,7 @@ public class AdminController {
 
     @GetMapping("/admin/add")
     public String getUserForm(Model model) {
-        model.addAttribute("listRole", userService.listRoles());
+        model.addAttribute("listRole", roleService.listRoles());
         return "userAdd";
     }
 
@@ -40,14 +44,14 @@ public class AdminController {
     public String addUser(@ModelAttribute("addUser") User user,
                           @RequestParam(value = "newRole", required = false) String[] role) {
         user.setRoles(addNewRole(role));
-        userService.add(user);
+        userServiceimpl.add(user);
         return "redirect:/admin";
     }
 
     @GetMapping("/admin/edit/{id}")
     public String editUser(@PathVariable("id") long id, Model model) {
-        model.addAttribute("listRole", userService.listRoles());
-        model.addAttribute("editUser", userService.getUserById(id));
+        model.addAttribute("listRole", roleService.listRoles());
+        model.addAttribute("editUser", userServiceimpl.getUserById(id));
         return "editUsers";
     }
 
@@ -55,13 +59,13 @@ public class AdminController {
     public String updateUser(@ModelAttribute("editUser") User user,
                              @RequestParam(value = "newRole", required = false) String[] role) {
         user.setRoles(addNewRole(role));
-        userService.updateUsers(user);
+        userServiceimpl.updateUsers(user);
         return "redirect:/admin";
     }
 
     @GetMapping("/admin/delete/{id}")
     public String deleteUser(@PathVariable("id") long id) {
-        userService.remove(id);
+        userServiceimpl.remove(id);
         return "redirect:/admin";
     }
 
@@ -70,14 +74,14 @@ public class AdminController {
 
     @GetMapping(value = "/user")
     public String clickMe(Model model, Principal principal) {
-        model.addAttribute("oneUser", userService.getUserByName(principal.getName()));
+        model.addAttribute("oneUser", userServiceimpl.getUserByName(principal.getName()));
         return "user";
     }
 
     private Set<Role> addNewRole(String[] role) {
         Set<Role> roleSet = new HashSet<>();
         for (int i = 0; i < role.length; i++) {
-            roleSet.add(userService.getRoleByName(role[i]));
+            roleSet.add(roleService.getRoleByName(role[i]));
         }
         return roleSet;
     }

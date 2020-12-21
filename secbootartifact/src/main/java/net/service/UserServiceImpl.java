@@ -1,71 +1,89 @@
 package net.service;
 
+import net.dao.RoleRepository;
+import net.dao.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import net.dao.UserDao;
 import net.model.User;
 import net.model.Role;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 @Service
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserDetailsService {
 
-    private final UserDao userDao;
+    private final UserRepository userRepository;
+
 
     @Autowired
-    public UserServiceImpl(UserDao userDao) {
-        this.userDao = userDao;
+    public UserServiceImpl(UserRepository userRepository) {
+        this.userRepository = userRepository;
+
     }
 
 
-    @Override
-    @Transactional
+
     public User getUserByName(String name) {
-        return userDao.getUserByName(name);
+        return userRepository.findByUsername(name);
     }
 
-    @Override
-    @Transactional
-    public void add(User user) {
-//        user.setPassword(NoOpPasswordEncoder.getInstance().encode(user.getPassword()));
-        userDao.add(user);
+
+
+    public boolean add(User user) {
+        User userX = userRepository.findByUsername(user.getUsername());
+        if (userX !=null){
+            return false;
+        }
+        userRepository.save(user);
+        return true;
     }
 
-    @Override
-    @Transactional
+
     public void updateUsers(User user) {
-        userDao.updateUsers(user);
+        userRepository.save(user);
     }
 
-    @Override
-    @Transactional
+
     public void remove(long id) {
-        userDao.remove(id);
+        userRepository.deleteById(id);
     }
 
-    @Override
-    @Transactional
+
     public User getUserById(long id) {
-        return userDao.getUserById(id);
+        User user = null;
+        Optional<User> optionalUser = userRepository.findById(id);
+        if (optionalUser.isPresent()){
+            user = optionalUser.get();
+        }
+        return user;
     }
 
-    @Override
-    @Transactional
+
     public List<User> listUsers() {
-        return userDao.listUsers();
+        return userRepository.findAll();
     }
 
-    @Override
-    @Transactional
-    public Role getRoleByName(String name) {
-        return userDao.getRoleByName(name);
-    }
+
 
     @Override
-    public List<Role> listRoles() {
-        return userDao.listRoles();
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findByUsername(username);
+
+        Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
+        for (Role role : user.getRoles()) {
+            grantedAuthorities.add(new SimpleGrantedAuthority(role.getName()));
+        }
+        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), grantedAuthorities);
+
+
     }
 
 }
