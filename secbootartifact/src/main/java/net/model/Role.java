@@ -3,7 +3,7 @@ package net.model;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
-import java.util.Objects;
+
 
 @Entity
 @Table(name = "roles")
@@ -20,7 +20,6 @@ public class Role implements GrantedAuthority {
     public Role(Long id, String name) {
         this.id = id;
         this.name = name;
-
     }
 
     public String getName() {
@@ -64,13 +63,8 @@ public class Role implements GrantedAuthority {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Role role = (Role) o;
-        return Objects.equals(id, role.id) &&
-                Objects.equals(name, role.name);
+        return id.equals(role.id);
 
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name);
-    }
 }

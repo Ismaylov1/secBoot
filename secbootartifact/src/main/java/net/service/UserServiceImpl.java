@@ -19,16 +19,8 @@ import java.util.Set;
 
 @Service
 public class UserServiceImpl implements UserDetailsService {
-
-    private final UserRepository userRepository;
-
-
     @Autowired
-    public UserServiceImpl(UserRepository userRepository) {
-        this.userRepository = userRepository;
-
-    }
-
+    private  UserRepository userRepository;
 
 
     public User getUserByName(String name) {

@@ -18,19 +18,15 @@ import java.util.Set;
 @Controller
 public class AdminController {
     @Autowired
-    private UserServiceImpl userServiceimpl;
+    private UserServiceImpl userService;
 
     @Autowired
     private RoleServiceImpl roleService;
 
     @GetMapping(value = "/admin")
     public String allUsers(Model model) {
-        model.addAttribute("allUsers", userServiceimpl.listUsers());
-        List<User> users = userServiceimpl.listUsers();
-        for (User user : users
-        ) {
-            System.out.println(user);
-        }
+        model.addAttribute("allUsers", userService.listUsers());
+        List<User> users = userService.listUsers();
         return "admin";
     }
 
@@ -44,14 +40,14 @@ public class AdminController {
     public String addUser(@ModelAttribute("addUser") User user,
                           @RequestParam(value = "newRole", required = false) String[] role) {
         user.setRoles(addNewRole(role));
-        userServiceimpl.add(user);
+        userService.add(user);
         return "redirect:/admin";
     }
 
     @GetMapping("/admin/edit/{id}")
     public String editUser(@PathVariable("id") long id, Model model) {
         model.addAttribute("listRole", roleService.listRoles());
-        model.addAttribute("editUser", userServiceimpl.getUserById(id));
+        model.addAttribute("editUser", userService.getUserById(id));
         return "editUsers";
     }
 
@@ -59,13 +55,13 @@ public class AdminController {
     public String updateUser(@ModelAttribute("editUser") User user,
                              @RequestParam(value = "newRole", required = false) String[] role) {
         user.setRoles(addNewRole(role));
-        userServiceimpl.updateUsers(user);
+        userService.updateUsers(user);
         return "redirect:/admin";
     }
 
     @GetMapping("/admin/delete/{id}")
     public String deleteUser(@PathVariable("id") long id) {
-        userServiceimpl.remove(id);
+        userService.remove(id);
         return "redirect:/admin";
     }
 
@@ -74,7 +70,7 @@ public class AdminController {
 
     @GetMapping(value = "/user")
     public String clickMe(Model model, Principal principal) {
-        model.addAttribute("oneUser", userServiceimpl.getUserByName(principal.getName()));
+        model.addAttribute("oneUser", userService.getUserByName(principal.getName()));
         return "user";
     }
 

@@ -10,14 +10,18 @@ import java.util.List;
 @Service
 public class RoleServiceImpl {
 
-    private final RoleRepository roleRepository;
+    RoleRepository roleRepository;
+
     @Autowired
     public RoleServiceImpl(RoleRepository roleRepository) {
         this.roleRepository = roleRepository;
     }
 
-    public Role getRoleByName(String name) {
-        return roleRepository.findByRole(name);
+
+
+
+    public Role getRoleByName(String role) {
+        return roleRepository.findByName(role);
     }
 
 
